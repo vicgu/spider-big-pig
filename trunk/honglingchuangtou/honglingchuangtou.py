@@ -1,5 +1,5 @@
 ﻿from honglingchuangtou_config import *
-import urllib2, re, sys, JSspider, time
+import urllib2, re, sys, time
 
 # Import global scripts
 sys.path.append("../")
