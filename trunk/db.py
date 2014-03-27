@@ -24,9 +24,17 @@ class DB:
       return False
     
   def ping(self):
-    if self.conn.ping() == False:
-      self.close()
-      self.open()
+    try:
+      if self.conn.ping() == False:
+        log.write('db', 'WARNING', 'Ping failed, try to close and open')
+        self.reopen()
+    except Exception as e:
+      log.write('db', 'error', 'ping failed: %s. try to reopen' % e)
+      self.reopen()
+      
+  def reopen(self):
+    self.close()
+    self.open()
   
   def close(self):
     if self.opened == True:
@@ -47,18 +55,23 @@ class DB:
       self.conn.commit()
       return n
     except Exception as e:
-      log.write('db', 'error', 'exeSql() Cannot execute sql, exception: %s' % e)
+      log.write('db', 'error', 'exeSql() Cannot execute sql(%s), exception: %s' % (sql, e))
       return -1
   
   # Return personID
   def getPersonID(self, nickName, source):
     self.ping()
-    sql = "select personID from personInfo where nickName = '%s' and infoSource = '%s'" % (nickName, source)
-    res = self.select(sql)
-    if len(res) == 0:
+    
+    try:
+      sql = "select personID from personInfo where nickName = '%s' and infoSource = '%s'" % (nickName, source)
+      res = self.select(sql)
+      if len(res) == 0:
+        return -1
+      else:
+        return int(res[-1][0])
+    except Exception as e:
+      log.write('db', 'error', 'getPersonID() Cannot execute sql(%s), exception: %s' % (sql,e))
       return -1
-    else:
-      return int(res[-1][0])
   
   # Return the generated id, -1 means error
   def insert(self, sql):
@@ -69,7 +82,7 @@ class DB:
       self.conn.commit()
       return n
     except Exception as e:
-      log.write('db', 'error', 'insert() Cannot execute sql, exception: %s' % e)
+      log.write('db', 'error', 'insert() Cannot execute sql(%s), exception: %s' % (sql, e))
       return -1
   
   # Return all the values selected
@@ -80,7 +93,7 @@ class DB:
       self.conn.commit()
       return self.cursor.fetchall()
     except Exception as e:
-      log.write('db', 'error', 'select() Cannot execute sql, exception: %s' % e)
+      log.write('db', 'error', 'select() Cannot execute sql(%s), exception: %s' % (sql, e))
       return -1
 
 def main():
