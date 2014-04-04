@@ -22,6 +22,11 @@ LOAN_LIST_BEG = 1
 LOAN_LIST_END = 1
 LOAN_ID_WORD  = "loanId"
 
+FM_PLAN_URL   = "http://www.renrendai.com/financeplan/listPlan!detailPlan.action?financePlanId="
+FM_PLAN_JOIN_URL = "http://www.renrendai.com/financeplan/getFinancePlanLenders.action?financePlanStr="
+FM_PLAN_BEG   = 56
+FM_PLAN_END   = 56
+
 DB_SOURCE     = "renrendai"
 DB_URL        = "www.renrendai.com"
 
@@ -36,6 +41,7 @@ VISIT_TIME    = 3
 
 OUTPUT_FILE   = "renrendai.csv"
 
+RE_FMPLAN     = '计划金额.*?<em.*?>(.*?)<.*?预期收益.*?data-value=\"(.*?)\".*?计划状态.*?<span.*?>(.*?)<.*?锁定期限.*?<em.*?>(.*?)<.*?锁定结束.*?<span.*?>(.*?)<.*?剩余金额.*?<em.*?>(.*?)<'
 RE_USER       = '用户名.*?<em.*?title=\"(.*?)\".*?title=\"(.*?)\".*?公司行业.*?<span.*?>(.*?)<.*?收入范围.*?<span.*?>(.*?)<.*?年&nbsp;&nbsp;&nbsp;&nbsp;龄.*?<span.*?>(.*?)<.*?公司规模.*?<span.*?>(.*?)<.*?学&nbsp;&nbsp;&nbsp;&nbsp;历.*?<span.*?>(.*?)<.*?岗位职位.*?<span.*?>(.*?)<.*?学&nbsp;&nbsp;&nbsp;&nbsp;校.*?title=\"(.*?)\".*?工作城市.*?<span.*?>(.*?)<.*?婚&nbsp;&nbsp;&nbsp;&nbsp;姻.*?<span.*?>(.*?)<.*?工作时间.*?<span.*?>(.*?)<'
 RE_READY      = '标的总额.*?<em.*?>(.*?)<.*?年利率.*?<em.*?>(.*?)<.*?还款期限.*?<em.*?>(.*?)<.*?保障方式.*?<span.*?>(.*?)<.*?提前还款费率.*?<em.*?>(.*?)<.*?还款方式.*?<span.*?>(.*?)<.*?月还本息.*?<em.*?>(.*?)<'
 RE_REPAYING   = '标的总额.*?<em.*?>(.*?)<.*?年利率.*?<em.*?>(.*?)<.*?还款期限.*?<em.*?>(.*?)<.*?保障方式.*?<span.*?>(.*?)<.*?提前还款费率.*?<em.*?>(.*?)<.*?还款方式.*?<span.*?>(.*?)<.*?月还本息.*?<em.*?>(.*?)<.*?待还本息.*?<span.*?>(.*?)<.*?剩余期数.*?<span.*?>(.*?)<.*?下一合约还款日.*?<span.*?>(.*?)<'
