@@ -83,7 +83,7 @@ def getLoanlist(opener):
   # return id list
   return loanIds
 
-def saveInfoToDB(db, infoUser, infoItems, bidRecords, paybackRecords):
+def saveLoanInfoToDB(db, infoUser, infoItems, bidRecords, paybackRecords):
   try:
     personID = db.getPersonID(infoUser[0], DB_SOURCE)
     # check whether personInfo exists. if not, save it
@@ -123,6 +123,106 @@ def saveInfoToDB(db, infoUser, infoItems, bidRecords, paybackRecords):
   except Exception, data:
     print "Exception:", data
 
+def saveFMPlanInfoToDB(db, infoPlan, joinDict, period):
+  try:
+    # save plan info to DB
+    columns = "section, money, income, updateTime, state, leftMoney, lockedLimit, lockedOverTime, url"
+    values = "'%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s'" % (str(period), infoPlan[0], infoPlan[1], str(time.time()), infoPlan[2], infoPlan[5], infoPlan[3], infoPlan[4], FM_PLAN_URL+str(period))
+    sql = "insert into renrendai_youxuanlicai (%s) values (%s);" % (columns, values)
+    licaiID = db.insert(sql)
+
+    # save plan join info to DB
+    columns = "licaiID, personID, investment, investmentTiime, updateTime, url"
+    for join in joinDict:
+      personID = db.getPersonID(join['nickName'], DB_SOURCE)
+      # check whether personInfo exists. if not, save it
+      if personID < 0:
+        sql = "insert into personInfo (nickName, updateTime, infoSource, url) values ('%s', '%s', '%s', '%s');" % (join['nickName'], str(time.time()), DB_SOURCE, DB_URL)
+        personID = db.insert(sql)
+      values = "'%s', '%s', '%s', '%s', '%s', '%s'" % (licaiID, personID, str(join['amount']), join['createTime'], str(time.time()), FM_PLAN_JOIN_URL+str(period))
+      sql = "insert into renrendai_youxuanlicaiJoin (%s) values (%s);" % (columns, values)
+      db.exeSql(sql)
+
+  except Exception, data:
+    print "Exception:", data
+
+def getFMPlan(outputFile, opener):
+  database = db.DB()
+  database.open()
+  for period in range(FM_PLAN_BEG, FM_PLAN_END + 1):
+    # get FMPlan info
+    url = FM_PLAN_URL + str(period)
+    isFail = False
+
+    try:
+      response = opener.open(url)
+    except:
+      for i in range(MAX_RETRY_TIME):
+        try:
+          print "-------> retry", period
+          time.sleep(RETRY_TIME)
+          response = opener.open(url)
+          isFail = False
+          break
+        except:
+          isFail = True
+          continue
+
+    if isFail == True:
+      return
+    print "----------> FMPlan got successfully", period
+    
+    try:
+      pageString = response.read().decode('utf-8')
+    except:
+      pageString = response.read().decode('gbk')
+
+    regularExp = RE_FMPLAN.decode('utf-8')
+    infoPlan = re.findall(regularExp, pageString, re.S)
+    print "----------> FMPlan parserred successfully", period
+
+    infoString = ""
+    for i in range(len(infoPlan[0])):
+      infoString += infoPlan[0][i].encode('gbk') + ','
+    infoString = infoString[:-1] + '\n'
+
+    # get FMPlanJoin info
+    url = FM_PLAN_JOIN_URL + str(period)
+    isSuccess = False
+    try:
+      response = opener.open(url)
+      isSuccess = True
+    except:
+      for i in range(MAX_RETRY_TIME):
+        try:
+          time.sleep(RETRY_TIME)
+          response = opener.open(url)
+          isSuccess = True
+          break
+        except:
+          continue
+    if isSuccess == False:
+      print "----------> Cannot get FMPlanJoin info from ID " + str(period)
+    try:
+      try:
+        raw_page = response.read().decode('utf-8')
+      except:
+        raw_page = response.read().decode('gbk')
+      joinDict = json.loads(raw_page)
+      for join in joinDict['data']['jsonList']:
+        infoString += join['nickName'].encode('gbk') + ','
+        infoString += str(join['amount']).encode('gbk') + ','
+        infoString += join['createTime'].encode('gbk') + '\n'
+    except Exception, data:
+      print "---------->[Exception]", data
+      print "---------->[Error] Json parser error getting FMPlanJoin info for period %d" % period
+
+    # save to DB
+    outputFile.write(infoString)
+    saveFMPlanInfoToDB(database, infoPlan[0], joinDict['data']['jsonList'], period)
+
+  database.close()
+  
 def getPriInfoById(loanId, opener):
   url = PRIVATE_URL + str(loanId)
 
@@ -252,7 +352,7 @@ def getPriInfoById(loanId, opener):
       print "---------->[Exception]", data
       print "---------->[Error] Json parser error getting paybackRecord for loanId %d" % loanId
   
-  saveInfoToDB(database, infoUser[0], infoItems[0], bidDict['data']['lenderRecords'], paybackDict['data']['phases'])
+  saveLoanInfoToDB(database, infoUser[0], infoItems[0], bidDict['data']['lenderRecords'], paybackDict['data']['phases'])
 
   database.close()
 
@@ -294,6 +394,7 @@ def renrendaiSpider():
   print "----> getting private info"
   outputFile = open(OUTPUT_FILE, "w+")
   getPriInfo(outputFile, opener, loanIds)
+  getFMPlan(outputFile, opener)
   outputFile.close()
   print "----> getting successfully\n"  
  
