@@ -28,6 +28,7 @@ DB_URL        = "www.renrendai.com"
 PRIVATE_URL   = "http://www.renrendai.com/lend/detailPage.action?loanId="
 
 BID_RECORD_URL= "http://www.renrendai.com/lend/getborrowerandlenderinfo.action?id=lenderRecords&loanId="
+PAYBACK_RECORD_URL= "http://www.renrendai.com/lend/getborrowerandlenderinfo.action?id=repayDetail&loanId="
 
 MAX_RETRY_TIME= 3
 RETRY_TIME    = 60
