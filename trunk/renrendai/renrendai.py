@@ -83,7 +83,7 @@ def getLoanlist(opener):
   # return id list
   return loanIds
 
-def saveUserInfoToDB(db, infoUser, infoItems, bidRecords):
+def saveInfoToDB(db, infoUser, infoItems, bidRecords, paybackRecords):
   try:
     personID = db.getPersonID(infoUser[0], DB_SOURCE)
     # check whether personInfo exists. if not, save it
@@ -110,6 +110,15 @@ def saveUserInfoToDB(db, infoUser, infoItems, bidRecords):
       values = "'%s', '%s', '%s', '%s', '%s', '%s'" % (borrowID, bidPersonID, str(loan['amount']), str(time.time()), DB_URL, loan['lendTime'])
       sql = "insert into bidRecord (%s) values (%s);" % (columns, values)
       bidID = db.insert(sql)
+
+    # save paybackRecords to DB
+    if paybackRecords == "":
+      return
+    columns = "borrowID, updateTime, url, state, paybackDate, paybackMoney, penalty"
+    for loan in paybackRecords:
+      values = "'%s', '%s', '%s', '%s', '%s', '%s', '%s'" % (borrowID, str(time.time()), DB_URL, loan['repayType'], loan['repayTime'], str(loan['unRepaidAmount']), str(loan['unRepaidFee']))
+      sql = "insert into paybackRecord (%s) values (%s);" % (columns, values)
+      paybackID = db.insert(sql)
 
   except Exception, data:
     print "Exception:", data
@@ -165,7 +174,7 @@ def getPriInfoById(loanId, opener):
     exit(1)
   
 #  uniregexp = REG_EXP.decode('utf-8')
-  # get userInfo & loanInfo
+  # get userInfo & borrowRecords
   infoUser = re.findall(RE_USER.decode('utf-8'), pageString, re.S)
   infoItems = re.findall(uniregexp, pageString, re.S)
   print "----------> private page regular parser successfully", loanId
@@ -178,7 +187,7 @@ def getPriInfoById(loanId, opener):
     infoString += infoItems[0][i].encode('gbk') + ','
   infoString = infoString[:-1] + '\n'
 
-  # get bid records
+  # get bidRecord
   url = BID_RECORD_URL + str(loanId)
   isSuccess = False
   try:
@@ -194,30 +203,56 @@ def getPriInfoById(loanId, opener):
       except:
         continue
   if isSuccess == False:
-    print "----------> Cannot get bid records from ID " + str(loanId)
+    print "----------> Cannot get bid record from ID " + str(loanId)
   try:
     try:
       raw_page = response.read().decode('utf-8')
     except:
       raw_page = response.read().decode('gbk')
-    jsonDict = json.loads(raw_page)
-    for loan in jsonDict['data']['lenderRecords']:
+    bidDict = json.loads(raw_page)
+    for loan in bidDict['data']['lenderRecords']:
       infoString += loan['userNickName'].encode('gbk') + ','
       infoString += str(loan['amount']).encode('gbk') + ','
       infoString += loan['lendTime'].encode('gbk') + '\n'
   except Exception, data:
     print "---------->[Exception]", data
-    print "---------->[Error] Json parser error for loanId %d" % loanId
-#  for item in infoItems:
-#    infoString = item[0].encode('gbk')  + ',' + \
-#                 item[1].encode('gbk')  + "," + \
-#                 item[2].encode('gbk')  + "," + \
-#                 item[3].encode('gbk')  + "," + \
-#                 item[4].encode('gbk')  + "," + \
-#                 item[5].encode('gbk')  + ',' + \
-#                 item[6].encode('gbk') + '\n'
+    print "---------->[Error] Json parser error getting bidRecord for loanId %d" % loanId
+
+  # get paybackRecord
+  paybackDict = {'data': {'phases': ""}}
+  if pageString.find("class=\"REPAYING\"") >= 0:
+    url = PAYBACK_RECORD_URL + str(loanId)
+    isSuccess = False
+    try:
+      response = opener.open(url)
+      isSuccess = True
+    except:
+      for i in range(MAX_RETRY_TIME):
+        try:
+          time.sleep(RETRY_TIME)
+          response = opener.open(url)
+          isSuccess = True
+          break
+        except:
+          continue
+    if isSuccess == False:
+      print "----------> Cannot get payback record from ID " + str(loanId)
+    try:
+      try:
+        raw_page = response.read().decode('utf-8')
+      except:
+        raw_page = response.read().decode('gbk')
+      paybackDict = json.loads(raw_page)
+      for loan in paybackDict['data']['phases']:
+        infoString += loan['repayTime'].encode('gbk') + ','
+        infoString += loan['repayType'].encode('gbk') + ','
+        infoString += str(loan['unRepaidAmount']).encode('gbk') + ','
+        infoString += str(loan['unRepaidFee']).encode('gbk') + '\n'
+    except Exception, data:
+      print "---------->[Exception]", data
+      print "---------->[Error] Json parser error getting paybackRecord for loanId %d" % loanId
   
-  saveUserInfoToDB(database, infoUser[0], infoItems[0], jsonDict['data']['lenderRecords'])
+  saveInfoToDB(database, infoUser[0], infoItems[0], bidDict['data']['lenderRecords'], paybackDict['data']['phases'])
 
   database.close()
 
@@ -238,7 +273,7 @@ def getPriInfo(outputFile, opener, loanIds):
     if len(priInfo) > 0:
       outputFile.write(priInfo)
       i += 1
-      print priInfo
+      #print priInfo
     else:
       print "Fresh too quick, retry after", RETRY_TIME
       time.sleep(RETRY_TIME)
