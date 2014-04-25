@@ -9,7 +9,7 @@
 #
 
 INFO_SOURCE = "honglingchuangtou"
-SAVE_DB    = False
+SAVE_DB    = True
 
 FINISH_RAN = 100
 FINISH_OUT_FILE = "finishborrowing.csv"

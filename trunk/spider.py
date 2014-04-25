@@ -4,11 +4,47 @@
 # CreateDate: Mar 19, 2014
 # Mail: xiaoning.liu.leon@gmail.com
 
-import log
+import log, sys
+sys.path.append("./yirendai")
+sys.path.append("./shixinren")
+sys.path.append("./honglingchuangtou")
+sys.path.append("./fujiancourt")
+sys.path.append("./renrendai")
+
+import yirendai
+import shixinren
+import honglingchuangtou
+import fujiancourt
+import renrendai
 
 def main():
   if __name__ == "__main__":
     log.write("spider", "info", "Spider starts...")
     # Below are all the entrance for different websites
+    
+    print "\n---------- yirendai ----------\n"
+    print "Begin search for yirendai..."
+    yirendai.yirendai_start()
+    print "Finish search for yirendai..."
+    
+    print "\n---------- shixinren ----------\n"
+    print "Begin search for yirendai..."
+    shixinren.shixinren_start()
+    print "Finish search for yirendai..."
+    
+    print "\n---------- honglingchuangtou ----------\n"
+    print "Begin search for honglingchuangtou..."
+    honglingchuangtou.honglingchuangtou_start()
+    print "Finish search for honglingchuangtou..."
+    
+    print "\n---------- fujiancourt ----------\n"
+    print "Begin search for fujiancourt..."
+    fujiancourt.fujiancourt_start()
+    print "Finish search for fujiancourt..."
+    
+    print "\n---------- renrendai ----------\n"
+    print "Begin search for renrendai..."
+    renrendai.renrendai_start()
+    print "Finish search for renrendai..."
     
 main()
