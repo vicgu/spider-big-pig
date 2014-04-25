@@ -159,10 +159,14 @@ def fujiancourt():
   
   outputFile.close()
 
-def main():
-  if __name__ == "__main__":
+def fujiancourt_start():
     print "===== Fu Jian court spider Start ====="
     fujiancourt()
     print "===== Fu Jian court spider End ====="
+    
+def main():
+  if __name__ == "__main__":
+    fujiancourt_start()
+
     
 main()
