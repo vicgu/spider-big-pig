@@ -11,7 +11,7 @@
 from renrendai_config import *
 import sys, urllib2, cookielib, json, time, re
 sys.path.append("../")
-import db
+import log, db
 
 # Login procedure
 # Return: login opener
@@ -378,12 +378,82 @@ def getPriInfo(outputFile, opener, loanIds):
       print "Fresh too quick, retry after", RETRY_TIME
       time.sleep(RETRY_TIME)
 
+def addToDBOneRecord(db, item):
+ # if SAVE_DB == False:
+  #  return
+  #print "begin db"
+  personID = db.getPersonID(item[0], INFO_SOURCE)
+  if personID < 0:
+    sql = "insert into personInfo (nickName, infoSource, updateTime) values ('%s', '%s', '%s')" % (item[0], INFO_SOURCE, str(time.time()))
+    personID = db.insert(sql)
+
+    print "insert success"
+  else:
+    print "insert fail"
+
+    
+# Get user's info list
+# Return: user's info list
+def getuserinfo(opener,db):
+  loanIds = []
+
+  # travel with loanList,  Max trying times
+  for pageId in range(650005,650008):#用户ID范围
+    # Get html
+    time.sleep(VISIT_TIME)
+    url = USER_LIST_URL + str(pageId)
+    isSuccess = False
+    try:
+      response  = opener.open(url)
+      isSuccess = True
+    except:
+      for i in range(MAX_RETRY_TIME):
+        try:
+          time.sleep(RETRY_TIME)
+          response  = opener.open(url)
+          isSuccess = True
+          break
+        except:
+          continue
+          
+    if isSuccess == False:
+      continue
+      
+    # 
+    try:
+      try:
+        raw_page = response.read().decode('utf-8')
+      except:
+        print "-------> get id try to use gbk", pageId
+        raw_page = response.read().decode('gbk')
+    except:
+        pass
+
+  #  f = open(str(pageId), 'w+')
+   # f.write( raw_page.encode('utf-8'))
+    #f.close()
+            
+    myItems = re.findall(REG_EXP123.decode('utf-8'), raw_page, re.S)
+    if len(myItems[0])<=0:
+      continue
+    else :
+      print myItems[0].encode('gbk')
+      addToDBOneRecord(db,myItems)
+
+  # return id list
+  return loanIds
+
 # Spider entrance
-def renrendaiSpider():
+def renrendaiSpider(database):
   # Login
   print "----> login"
   opener = login()
   print "----> login successfully\n"
+  
+  # Get user info
+  print "----> getting user info"
+  loanIds = getuserinfo(opener,database)
+  print "----> user info getting successfully\n"
   
   # Get loan list
   print "----> getting loan ids"
@@ -398,10 +468,22 @@ def renrendaiSpider():
   outputFile.close()
   print "----> getting successfully\n"  
  
+def renrendai_start():
+
+  
+  # Get user info
+    if SAVE_DB == False:
+      log.write(INFO_SOURCE, "info", "save to db turned off")
+    
+    database = db.DB()
+    database.open()
+    print "===== renrendai spider Start ====="
+    renrendaiSpider(database)
+    print "===== renrendai spider End ====="
+    database.close()
+    
 def main():
   if __name__ == "__main__":
-    print "===== renrendai spider Start ====="
-    renrendaiSpider()
-    print "===== renrendai spider End ====="
+    renrendai_start()
     
 main()

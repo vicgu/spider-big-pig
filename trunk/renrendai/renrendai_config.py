@@ -18,6 +18,7 @@ LOGIN_HAD     = [("Accept", "text/html, application/xhtml+xml, */*"), \
                  ("Host", "www.renrendai.com")]
                  
 LOAN_LIST_URL = "http://www.renrendai.com/lend/loanList!json.action?pageIndex="
+USER_LIST_URL = "https://www.renrendai.com/account/myInfo.action?userId="
 LOAN_LIST_BEG = 1
 LOAN_LIST_END = 1
 LOAN_ID_WORD  = "loanId"
@@ -49,3 +50,6 @@ REG_EXP       = '用户档案.*?ID\s*?(\d*?)</span>.*?nickname-text.*?>(.*?)<.*?
 
 RE_TITLES     = ''
 REG_TITLES    = '用户ID, 用户名, 性别, 公司行业, 年龄, 公司规模, 学历, 工作城市, 学校, 工作时间, 婚姻, 职位, 收入范围\n'
+INFO_SOURCE = "renrendai"
+SAVE_DB    = False
+REG_EXP123       = 'data-userid=".*?">(.*?)</span>'
