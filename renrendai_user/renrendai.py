@@ -39,9 +39,9 @@ def addToDBOneRecord(db, item):
  # if SAVE_DB == False:
   #  return
   #print "begin db"
-  personID = db.getPersonID(item[0], INFO_SOURCE)
+  personID = db.getPersonID(item, INFO_SOURCE)
   if personID < 0:
-    sql = "insert into personInfo (nickName, infoSource, updateTime) values ('%s', '%s', '%s')" % (item[0], INFO_SOURCE, str(time.time()))
+    sql = "insert into personInfo (nickName, infoSource, updateTime) values ('%s', '%s', '%s')" % (item, INFO_SOURCE, str(time.time()))
     personID = db.insert(sql)
     db.exeSql(sql)
     print "insert success"

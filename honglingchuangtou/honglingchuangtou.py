@@ -188,19 +188,22 @@ def onGoingToDBOneRecord(db, item):
   values = "%s, '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s'" % (str(personID), str(time.time()), item[2], "n", item[3], item[4], INFO_SOURCE, item[8], item[9], item[6])
   sql = "insert into borrowRecords (%s) values (%s)" % (columns, values)
   db.exeSql(sql)
- 
+
+def honglingchuangtou_start():
+  # JSspider.JSspider("black.csv")
+  if SAVE_DB == False:
+    log.write(INFO_SOURCE, "info", "save to db turned off")
+  
+  database = db.DB()
+  database.open()
+  
+  onGoingSpider(database)
+  finsihSpider(database)
+  
+  database.close()
+  
 def main():
   if __name__ == "__main__": 
-    # JSspider.JSspider("black.csv")
-    if SAVE_DB == False:
-      log.write(INFO_SOURCE, "info", "save to db turned off")
-    
-    database = db.DB()
-    database.open()
-    
-    onGoingSpider(database)
-    finsihSpider(database)
-    
-    database.close()
+    honglingchuangtou_start()
     
 main()

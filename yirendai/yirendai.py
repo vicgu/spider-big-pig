@@ -74,22 +74,23 @@ def saveToDB(db, item):
   values  = "'%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s'" % (item[0], item[1], item[2], item[3], item[4], item[5], item[7], item[8], str(time.time()), DB_SOURCE)
   sql = "insert into personInfo (%s) values (%s)" % (columns, values)
   db.exeSql(sql)
+
+def yirendai_start():
+  database = db.DB()
+  database.open()
+  
+  i = startId
+  while i <= endId:
+    print "(yirendai) Searching from %d to %d" % (i, i+999)
+
+    yirendai_spider(database, url, i, i+999, regexp)
+    i = i + 1000
+
+  database.close()  
+  print "(yirendai) Finish"
   
 def main():
   if __name__ == "__main__":
-    
-    database = db.DB()
-    database.open()
-    
-    i = startId
-    while i <= endId:
-      print "Searching from %d to %d" % (i, i+999)
-
-      yirendai_spider(database, url, i, i+999, regexp)
-      i = i + 1000
-
-    print "Finished"
-
-    database.close()
+    yirendai_start()
 
 main()
