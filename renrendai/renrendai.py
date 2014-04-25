@@ -398,7 +398,7 @@ def getuserinfo(opener,db):
   loanIds = []
 
   # travel with loanList,  Max trying times
-  for pageId in range(650005,650008):#用户ID范围
+  for pageId in range(PAGEID_BEG,PAGEID_END):#用户ID范围
     # Get html
     time.sleep(VISIT_TIME)
     url = USER_LIST_URL + str(pageId)

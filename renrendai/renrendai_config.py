@@ -27,6 +27,8 @@ FM_PLAN_URL   = "http://www.renrendai.com/financeplan/listPlan!detailPlan.action
 FM_PLAN_JOIN_URL = "http://www.renrendai.com/financeplan/getFinancePlanLenders.action?financePlanStr="
 FM_PLAN_BEG   = 56
 FM_PLAN_END   = 56
+PAGEID_BEG   = 600000  #renrendai userid rang
+PAGEID_END   = 700000
 
 DB_SOURCE     = "renrendai"
 DB_URL        = "www.renrendai.com"
