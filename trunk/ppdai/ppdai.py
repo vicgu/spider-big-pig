@@ -36,16 +36,36 @@ def login():
     print "-------> Login success"
   
   return opener
-  
+ 
 def isLogin(cookieJar):
   for cookie in cookieJar:
     if cookie.name == "ppd_serName":
       return True
   return False
-  
+ 
+def getPageInfo(opener):
+  for loanId in range(LOAN_ID_BEGIN, LOAN_ID_END + 1):
+    getLoanInfo(loanId, opener)
+
+def getLoanInfo(loanId, opener):
+  url = LOAN_URL + str(loanId)
+  try:
+    response = opener.open(url)
+  except Exception, data:
+    print "[Exception]", data
+    exit(0)
+  try:
+    pageString = response.read().decode('utf-8')
+  except:
+    pageString = response.read().decode('gbk')
+  #print pageString
+  infoLoan = re.findall(RE_LOAN.decode('utf-8'), pageString, re.S)
+  for i in range(len(infoLoan[0])):
+    print ''.join(''.join(infoLoan[0][i].split()).split(','))
 
 def main():
   if __name__ == "__main__":
-    login()
+    opener = login()
+    getPageInfo(opener)
     
 main()

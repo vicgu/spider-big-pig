@@ -20,3 +20,9 @@ LOGIN_HAD     = [("Accept", "text/html, application/xhtml+xml, */*"), \
                  ("User-Agent", "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; WOW64; Trident/6.0)"), \
                  ("Content-Type", "application/x-www-form-urlencoded")]
                  
+VISIT_TIME    = 3
+MAX_RETRY_TIME= 3
+LOAN_URL      = "http://www.ppdai.com/list/"
+LOAN_ID_BEGIN = 123456
+LOAN_ID_END   = 123456
+RE_LOAN       = '金&nbsp;&nbsp;&nbsp;额.*?<span.*?;(.*?)<.*?年利率.*?<span.*?>(.*?)<.*?期&nbsp;&nbsp;&nbsp;限.*?<span.*?>(.*?)<.*?每月还款.*?;(.*?)<.*?class="user_face_name".*?href.*?>(.*?)<'
