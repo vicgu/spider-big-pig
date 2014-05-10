@@ -23,6 +23,9 @@ LOGIN_HAD     = [("Accept", "text/html, application/xhtml+xml, */*"), \
 VISIT_TIME    = 3
 MAX_RETRY_TIME= 3
 LOAN_URL      = "http://www.ppdai.com/list/"
-LOAN_ID_BEGIN = 123456
-LOAN_ID_END   = 123456
+LOAN_ID_BEGIN = 593372
+LOAN_ID_END   = 593372
 RE_LOAN       = '金&nbsp;&nbsp;&nbsp;额.*?<span.*?;(.*?)<.*?年利率.*?<span.*?>(.*?)<.*?期&nbsp;&nbsp;&nbsp;限.*?<span.*?>(.*?)<.*?每月还款.*?;(.*?)<.*?class="user_face_name".*?href.*?>(.*?)<'
+RE_BORROW     = '<tr>.*?<td>.*?href.*?>(.*?)<.*?<td>(.*?)<.*?<td.*?;(.*?)<.*?</tr>'
+INFO_SOURCE   = "paipaidai"
+INFO_URL      = "www.paipaidai.com"
