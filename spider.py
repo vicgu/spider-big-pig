@@ -10,12 +10,14 @@ sys.path.append("./shixinren")
 sys.path.append("./honglingchuangtou")
 sys.path.append("./fujiancourt")
 sys.path.append("./renrendai")
+sys.path.append("./ppdai")
 
 import yirendai
 import shixinren
 import honglingchuangtou
 import fujiancourt
 import renrendai
+import ppdai
 
 def main():
   if __name__ == "__main__":
@@ -46,5 +48,10 @@ def main():
     print "Begin search for renrendai..."
     renrendai.renrendai_start()
     print "Finish search for renrendai..."
+    
+    print "\n---------- ppdai ----------\n"
+    print "Begin search for ppdai..."
+    ppdai.ppdai_start()
+    print "Finish search for ppdai..."
     
 main()
