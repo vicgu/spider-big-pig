@@ -68,9 +68,9 @@ def getLoanInfo(loanId, opener):
   database = db.DB()
   database.open()
 
-  saveLoanInfoToDB(database, infoLoanList, infoBorrow)
+  saveLoanInfoToDB(database, infoLoanList, infoBorrow,url)
 
-def saveLoanInfoToDB(db, infoLoan, infoBorrow):
+def saveLoanInfoToDB(db, infoLoan, infoBorrow,url):
   try:
     # check whether personInfo exists. if not, save it
     personID = db.getPersonID(infoLoan[4], INFO_SOURCE)
@@ -80,7 +80,7 @@ def saveLoanInfoToDB(db, infoLoan, infoBorrow):
 
     # save borrowRecords to DB
     columns = "personID, updateTime, moneyAmount, interestRate, duration, infoSource, url, monthPay"
-    values = "'%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s'" % (personID, str(time.time()), infoLoan[0], infoLoan[1], infoLoan[2], INFO_SOURCE, INFO_URL, infoLoan[3])
+    values = "'%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s'" % (personID, str(time.time()), infoLoan[0], infoLoan[1], infoLoan[2], INFO_SOURCE, url, infoLoan[3])
     sql = "insert into borrowRecords (%s) values (%s);" % (columns, values)
     borrowID = db.insert(sql)
 
@@ -93,15 +93,19 @@ def saveLoanInfoToDB(db, infoLoan, infoBorrow):
       if bidPersonID < 0:
         sql = "insert into personInfo (nickName, infoSource, updateTime) values ('%s', '%s', '%s');" % (bidPersonName, INFO_SOURCE, str(time.time()))
         bidPersonID = db.insert(sql)
-      values = "'%s', '%s', '%s', '%s', '%s'" % (borrowID, bidPersonID, bidMoney, str(time.time()), INFO_URL)
+      values = "'%s', '%s', '%s', '%s', '%s'" % (borrowID, bidPersonID, bidMoney, str(time.time()), url)
       sql = "insert into bidRecord (%s) values (%s);" % (columns, values)
       bidID = db.insert(sql)
   except Exception, data:
     print "[Exception]", data
 
-def main():
-  if __name__ == "__main__":
+def ppdai_start():
     opener = login()
     getPageInfo(opener)
+    
+def main():
+  if __name__ == "__main__":
+    ppdai_start()
+
     
 main()
