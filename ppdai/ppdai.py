@@ -77,7 +77,7 @@ def saveLoanInfoToDB(db, infoLoan, infoBorrow,url):
     if personID < 0:
       sql = "insert into personInfo (nickName, infoSource, updateTime, url) values ('%s', '%s', '%s', '%s');" % (infoLoan[4], INFO_SOURCE, str(time.time()), url)
       personID = db.insert(sql)
-      print "Finish search for ppdai urlllll..."
+      
 
     # save borrowRecords to DB
     columns = "personID, updateTime, moneyAmount, interestRate, duration, infoSource, url, monthPay"
@@ -92,7 +92,7 @@ def saveLoanInfoToDB(db, infoLoan, infoBorrow,url):
       bidMoney = ''.join(''.join(borrow[2].split()).split(','))
       bidPersonID = db.getPersonID(bidPersonName, INFO_SOURCE)
       if bidPersonID < 0:
-        sql = "insert into personInfo (nickName, infoSource, updateTime) values ('%s', '%s', '%s');" % (bidPersonName, INFO_SOURCE, str(time.time()))
+        sql = "insert into personInfo (nickName, infoSource, updateTime, url) values ('%s', '%s', '%s', '%s');" % (bidPersonName, INFO_SOURCE, str(time.time()), url)
         bidPersonID = db.insert(sql)
       values = "'%s', '%s', '%s', '%s', '%s'" % (borrowID, bidPersonID, bidMoney, str(time.time()), url)
       sql = "insert into bidRecord (%s) values (%s);" % (columns, values)
