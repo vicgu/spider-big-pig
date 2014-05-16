@@ -75,8 +75,9 @@ def saveLoanInfoToDB(db, infoLoan, infoBorrow,url):
     # check whether personInfo exists. if not, save it
     personID = db.getPersonID(infoLoan[4], INFO_SOURCE)
     if personID < 0:
-      sql = "insert into personInfo (nickName, infoSource, updateTime) values ('%s', '%s', '%s');" % (infoLoan[4], INFO_SOURCE, str(time.time()))
+      sql = "insert into personInfo (nickName, infoSource, updateTime, url) values ('%s', '%s', '%s', '%s');" % (infoLoan[4], INFO_SOURCE, str(time.time()), url)
       personID = db.insert(sql)
+      print "Finish search for ppdai urlllll..."
 
     # save borrowRecords to DB
     columns = "personID, updateTime, moneyAmount, interestRate, duration, infoSource, url, monthPay"
